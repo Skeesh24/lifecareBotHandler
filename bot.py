@@ -1,10 +1,12 @@
 from aiogram import Bot, Dispatcher
+from aiogram.types import WebAppInfo
 from config import Config
 import asyncio
 
 
 bot = Bot(token=Config.BOT_TOKEN)
 dp = Dispatcher(bot=bot)
+web_app = WebAppInfo(url="https://skeesh24.github.io/plugbot/")
 
 
 async def main():

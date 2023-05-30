@@ -2,25 +2,29 @@ from aiogram.types import LabeledPrice, Message, PreCheckoutQuery, ContentType
 from bot import bot, dp
 from aiogram.dispatcher.filters import Command
 from config import Config
+from keyboards.plugin_keyboard import Plugin_keyboard
 
-
-price = [LabeledPrice(label='Standart', amount=43200)]
+prices = {
+    'standart': LabeledPrice(label='Standart', amount=43200),
+    'xtra': LabeledPrice(label='Xtra', amount=84700),
+    'premium': LabeledPrice(label='Premium', amount=101700)
+}
 
 
 @dp.message_handler(Command('start'))
 async def start(message: Message):
-    await bot.send_message(message.chat.id, "Hola.")
+    await bot.send_message(message.chat.id, f"Hola. {prices['1']}", reply_markup=Plugin_keyboard)
 
 
-@dp.message_handler(Command("buy"))
-async def buy_process(message: Message):
-    await bot.send_invoice(message.chat.id,
+@dp.message_handler(content_types='web_app_data')
+async def buy_process(resp: Message):
+    await bot.send_invoice(resp.chat.id,
                            title='standart',
                            description='standart service pack',
                            provider_token=Config.PAYMENTS_TOKEN,
                            currency='rub',
                            need_email=True,
-                           prices=price,
+                           prices=prices[f'{resp.web_app_data.data}'],
                            start_parameter='example',
                            payload='some_invoice')
 
