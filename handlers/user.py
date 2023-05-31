@@ -1,16 +1,14 @@
 from typing import Any
-from aiogram.types import LabeledPrice, Message, PreCheckoutQuery, ContentType, CallbackQuery
+from aiogram.types import Message, PreCheckoutQuery, ContentType, CallbackQuery
 from bot import bot, dp
 from aiogram.dispatcher.filters import Command
 from config import Config
 from keyboards.profile_keyboard import start_keyboard, why_keyboard, profile_keyboard
-
-
-prices = {
-    'standart': LabeledPrice(label='Standart', amount=43200),
-    'xtra': LabeledPrice(label='Xtra', amount=84700),
-    'premium': LabeledPrice(label='Premium', amount=101700)
-}
+from services.database import SessionLocal
+from keyboards.plugin_keyboard import plugin_keyboard
+from services.database import db
+from services.subscriptions import getSubFromCallbackData
+from sqlalchemy.orm import Session
 
 
 @dp.message_handler(Command('start'))
@@ -18,18 +16,19 @@ async def start(message: Message):
     await bot.send_message(
         message.chat.id,
         Config.START_MESSAGE,
-        reply_markup=start_keyboard)
+        reply_markup=plugin_keyboard)
 
 
 @dp.message_handler(content_types='web_app_data')
 async def buy_process(resp: Message):
+    data = resp.web_app_data.data
     await bot.send_invoice(resp.chat.id,
-                           title=prices[f'{resp.web_app_data.data}'].label,
-                           description=f'{prices[f"{resp.web_app_data.data}"].label} service pack',
+                           title=getSubFromCallbackData(db, f'{data}').label,
+                           description=f'{getSubFromCallbackData(db, f"{data}").label} service pack',
                            provider_token=Config.PAYMENTS_TOKEN,
                            currency='rub',
                            need_email=True,
-                           prices=[prices[f'{resp.web_app_data.data}']],
+                           prices=[getSubFromCallbackData(db, f'{data}')],
                            start_parameter='example',
                            payload='some_invoice')
 
