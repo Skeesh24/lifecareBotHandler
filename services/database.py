@@ -6,11 +6,11 @@ from config import Config
 
 
 # ====== export ====== #
-engine = create_engine(
-    url=Config.MYSQL_CONNECTION_STRING, pool_pre_ping=True)
+engine = create_engine(url=Config.MYSQL_CONNECTION_STRING, pool_pre_ping=True)
 SessionLocal = sessionmaker(bind=engine, autoflush=False)
 db = SessionLocal()
 base = declarative_base()
+metadata = MetaData()
 # ====== export ====== #
 
-# base.metadata.create_all(bind=engine)
+metadata.create_all(bind=engine)
