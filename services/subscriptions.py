@@ -1,7 +1,8 @@
 from aiogram.types import LabeledPrice
 from services.database import base
-from sqlalchemy import Column, Integer, Table, String, Float
+from sqlalchemy import Column, Integer, Table, String, Float, text
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 
 
 # subs_table = Table(
@@ -23,18 +24,16 @@ class Subs(base):
         return f'{self.id}, {self.name}, {self.price}'
 
 
-def getSubFromCallbackData(db: Session, data: str) -> LabeledPrice:
+class sub(BaseModel):
     id: int
+    name: str
+    price: int
 
-    match data:
-        case "standart": id = 1
-        case "xtra": id = 2
-        case "premium": id = 3
 
-    res = db.get(Subs, {"id": id})
+def getSubFromCallbackData(db: Session, data: str) -> LabeledPrice:
+    row = db.execute(
+        text(f'SELECT * FROM LIFE_BOT.Subscriptions WHERE name = "{data}"')).first()
 
-    dict_res = {"label": res.__dict__.get("name")}
+    res = dict(zip(row._fields, row.t))
 
-    dict_res.update({"amount": res.__dict__.get("price")*100})
-
-    return LabeledPrice(**dict_res)
+    return LabeledPrice(data, res["price"]*100)

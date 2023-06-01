@@ -14,6 +14,3 @@ base = declarative_base()
 # ====== export ====== #
 
 # base.metadata.create_all(bind=engine)
-
-connect = engine.connect()
-connect.exec_driver_sql('SELECT * FROM Subscriptions')
