@@ -9,7 +9,7 @@ dp = Dispatcher(bot=bot)
 web_app = WebAppInfo(url="https://skeesh24.github.io/plugbot/")
 
 
-async def main():
+async def main() -> None:
     from handlers import dp
     try:
         await dp.start_polling()

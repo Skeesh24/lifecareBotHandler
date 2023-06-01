@@ -20,7 +20,7 @@ class Subs(base):
     name = Column("name", String(50), nullable=False)
     price = Column("price", Integer, nullable=False)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.id}, {self.name}, {self.price}'
 
 
@@ -30,5 +30,7 @@ def getSubFromCallbackData(db: Session, data: str) -> LabeledPrice:
     row = db.execute(query).first()
 
     res = dict(zip(row._fields, row.t))
+
+    db.close()
 
     return LabeledPrice(data, res["price"]*100)

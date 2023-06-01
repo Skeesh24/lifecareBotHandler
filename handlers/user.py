@@ -4,15 +4,13 @@ from bot import bot, dp
 from aiogram.dispatcher.filters import Command
 from config import Config
 from keyboards.profile_keyboard import start_keyboard, why_keyboard, profile_keyboard
-from services.database import SessionLocal
 from keyboards.plugin_keyboard import plugin_keyboard
 from services.database import db
 from services.subscriptions import getSubFromCallbackData
-from sqlalchemy.orm import Session
 
 
 @dp.message_handler(Command('start'))
-async def start(message: Message):
+async def start(message: Message) -> None:
     await bot.send_message(
         message.chat.id,
         Config.START_MESSAGE,
@@ -20,7 +18,7 @@ async def start(message: Message):
 
 
 @dp.message_handler(content_types='web_app_data')
-async def buy_process(resp: Message):
+async def buy_process(resp: Message) -> None:
     data = resp.web_app_data.data
     await bot.send_invoice(resp.chat.id,
                            title=getSubFromCallbackData(db, f'{data}').label,
@@ -34,22 +32,22 @@ async def buy_process(resp: Message):
 
 
 @dp.pre_checkout_query_handler(lambda query: True)
-async def pre_checkout_process(pre_checkout: PreCheckoutQuery):
+async def pre_checkout_process(pre_checkout: PreCheckoutQuery) -> None:
     await bot.answer_pre_checkout_query(pre_checkout.id, ok=True)
 
 
 @dp.message_handler(content_types=ContentType.SUCCESSFUL_PAYMENT)
-async def successful_payment(message: Message):
+async def successful_payment(message: Message) -> None:
     await bot.send_message(message.chat.id, Config.PAYMENT_ANSWER)
 
 
 @dp.message_handler(content_types=ContentType.STICKER)
-async def sticker_sent(message: Message):
+async def sticker_sent(message: Message) -> None:
     await bot.send_message(message.chat.id, Config.STICKER_ANSWER)
 
 
 @dp.callback_query_handler()
-async def query_handler(callback: CallbackQuery):
+async def query_handler(callback: CallbackQuery) -> None:
     markup: Any
     text = ""
 
@@ -69,7 +67,7 @@ async def query_handler(callback: CallbackQuery):
         case Config.BUY_DATA:
             await bot.send_message(
                 callback.message.chat.id,
-                "press the keyboard button to go to the shop",
+                Config.BUY_ANSWER,
                 reply_markup=plugin_keyboard)
             return
 
@@ -80,6 +78,7 @@ async def query_handler(callback: CallbackQuery):
         text=text)
 
 
+# remove in most likely unit, stop to store it with dp handlers
 def getProfileAnswer(message: Message) -> str:
     return f'Hello, {message.chat.username}.\n'\
         f'this is ur profile.'
