@@ -21,7 +21,7 @@ why_keyboard = InlineKeyboardMarkup(
 profile_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(
-            'Buy LIFE sub', web_app=web_app),
+            'Подписка', callback_data=Config.BUY_DATA),
          InlineKeyboardButton('Назад', callback_data=Config.PROFILEBACK_DATA)]
     ],
 )

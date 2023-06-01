@@ -16,7 +16,7 @@ async def start(message: Message):
     await bot.send_message(
         message.chat.id,
         Config.START_MESSAGE,
-        reply_markup=plugin_keyboard)
+        reply_markup=start_keyboard)
 
 
 @dp.message_handler(content_types='web_app_data')
@@ -66,6 +66,12 @@ async def query_handler(callback: CallbackQuery):
         case Config.PROFILEBACK_DATA:
             markup = start_keyboard
             text = Config.START_MESSAGE
+        case Config.BUY_DATA:
+            await bot.send_message(
+                callback.message.chat.id,
+                "press the keyboard button to go to the shop",
+                reply_markup=plugin_keyboard)
+            return
 
     await bot.edit_message_text(
         chat_id=callback.message.chat.id,
