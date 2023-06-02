@@ -2,7 +2,7 @@ from aiogram.types import LabeledPrice
 from services.database import base, metadata
 from sqlalchemy import Column, Integer, Table, String, Float, text
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from services.currency_converter import eur_to_rub
 
 
 subs_table = Table(
@@ -33,4 +33,5 @@ def getSubFromCallbackData(db: Session, data: str) -> LabeledPrice:
 
     db.close()
 
-    return LabeledPrice(data, res["price"]*100)
+    # Auto converting in rub, price in the euro format in db
+    return LabeledPrice(data, eur_to_rub(res["price"]) * 100)

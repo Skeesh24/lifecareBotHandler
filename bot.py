@@ -6,7 +6,7 @@ import asyncio
 
 bot = Bot(token=Config.BOT_TOKEN)
 dp = Dispatcher(bot=bot)
-web_app = WebAppInfo(url="https://skeesh24.github.io/plugbot/")
+web_app = WebAppInfo(url=Config.WEB_APP_URL)
 
 
 async def main() -> None:
